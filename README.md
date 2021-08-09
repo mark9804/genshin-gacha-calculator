@@ -6,6 +6,11 @@
 
 由 [孤胆飞客](https://bbs.nga.cn/nuke.php?func=ucp&uid=43116386)的[C++及Excel版（对应1.6及以下版本）](https://bbs.nga.cn/read.php?tid=26447862)魔改而来。
 
+## 使用方式
+1. 在[releases页面](https://github.com/Mark9804/genshin-gacha-calculator/releases)下载打包好的文件（Windows对应exe，MacOS、Linux对应sh）
+2. 双击运行对应文件
+3. 如果发现错误或乱码，[Issue](https://github.com/Mark9804/genshin-gacha-calculator/issues/new)或者在[帖子](https://bbs.nga.cn/read.php?tid=27989098)里回复我
+
 <details>
 <summary>抽卡模型</summary>
 
