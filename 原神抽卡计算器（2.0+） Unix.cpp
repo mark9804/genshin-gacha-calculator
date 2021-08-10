@@ -235,11 +235,22 @@ int main() {
         double average = (double) sum / gachan;
         // 计算方差
         double totalDeviation = 0;
+        int tempMax = 0;
+        int tempMin = 999999;
         for (int tries : trials) {
             int i = tries;
             double deviation = (i - average) * (i - average);
             totalDeviation += deviation;
+            // 计算欧皇和非酋
+            if (i > tempMax) {
+                tempMax = i;
+            }
+            if (i < tempMin) {
+                tempMin = i;
+            }
         }
+        int maximum = tempMax;
+        int minimum = tempMin;
         double stderr = sqrt(totalDeviation / gachan);
         // 90百分位1.281552，80百分位0.8416212,70百分位0.5244005
         // x = µ + Zσ
@@ -274,10 +285,11 @@ int main() {
 
         printf("\n总%d人所需的平均抽数 %.2lf 次\n", gachan, (double) sum / gachan);
         printf("%d人在预算以内达成，占比 %.3lf%%\n", get, (double) get / gachan * 100);
-        printf("70%%的人在%.2lf抽内达成目标；80%%的人在%.2lf抽内达成目标；90%%的人在%.2lf抽内达成目标\n\n",
+        printf("70%%的人在%.2lf抽内达成目标\n80%%的人在%.2lf抽内达成目标\n90%%的人在%.2lf抽内达成目标\n\n",
                seventiethPercentile,
                eightiethPercentile,
                ninetiethPercentile);
+        printf("最多出货花费%d抽\n最少出货花费%d抽\n\n", maximum, minimum);
         cout << "按Enter开始下一次（ctrl+C退出）……" << endl;
         system("read");
         system("clear");
