@@ -1,4 +1,6 @@
-
+.idea
 requirements.txt
 genshin-gacha-calculator.py
 genshin-gacha-calculator-gui.py
+a.out
+.DS_Store
