@@ -1,7 +1,11 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <list>
+#include <math.h>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 using namespace std;
 using namespace chrono;
 
@@ -137,6 +141,7 @@ int main() {
         // 统计
         long long int sum = 0; // 总抽数
         int get = 0; // 预算以内实现目标的人数
+        list<int> trials; // 每次抽卡的详细抽数
 
         // 状态变量
         double temp; // 概率临时值
@@ -151,6 +156,7 @@ int main() {
             gbd = bd5 + 1, gup = up5;
             tot = 0;
             int fatePoint = 0;
+
             for (j = 1; j < 999999; j++) {
                 temp = ri(e);
                 if (temp < b5[gbd]) // 出金
@@ -174,7 +180,7 @@ int main() {
                                 tot++;
                                 fatePoint = 0;
                             } else { // 1.2 歪了，命定值+1
-                                if (fatePoint >= 2) { // 2. 献祭命定值救回来了，命定值归零
+                                if (fatePoint >= 2) {// 2. 献祭命定值救回来了，命定值归零
                                     tot++;
                                     fatePoint = 0;
                                 } else { // 2.1 命定值也不够，又没有钞能力，拿来吧你（指648）
@@ -216,11 +222,31 @@ int main() {
                 // 数量达标后
                 if (tot == goal) {
                     sum += j;
-                    if (j <= budget)get++;
+                    trials.push_back(j);
+                    if (j <= budget) {
+                        get++;
+                    }
                     break;
                 }
             }
         }
+
+        // 计算70,80,90百分位
+        // 计算均值
+        double average = (double) sum / gachan;
+        // 计算方差
+        double totalDeviation = 0;
+        for (int tries : trials) {
+            int i = tries;
+            double deviation = (i - average) * (i - average);
+            totalDeviation += deviation;
+        }
+        double stderr = sqrt(totalDeviation / gachan);
+        // 90百分位1.281552，80百分位0.8416212,70百分位0.5244005
+        // x = µ + Zσ
+        double ninetiethPercentile = average + 1.281552 * stderr;
+        double eightiethPercentile = average + 0.8416212 * stderr;
+        double seventiethPercentile = average + 0.5244005 * stderr;
 
         auto etime = system_clock::now();
         auto duration = duration_cast<microseconds>(etime - stime);
@@ -249,8 +275,14 @@ int main() {
 
         printf("\n总%d人所需的平均抽数 %.2lf 次\n", gachan, (double) sum / gachan);
         printf("%d人在预算以内达成，占比 %.3lf%%\n", get, (double) get / gachan * 100);
-
+        printf("70%%的人在%.2lf抽内达成目标；80%%的人在%.2lf抽内达成目标；90%%的人在%.2lf抽内达成目标\n\n",
+               seventiethPercentile,
+               eightiethPercentile,
+               ninetiethPercentile);
         cout << "按Enter开始下一次（ctrl+C退出）……" << endl;
         system("pause");
+        system("cls");
     }
 }
+
+#pragma clang diagnostic pop

@@ -1,7 +1,11 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <list>
+#include <math.h>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 using namespace std;
 using namespace chrono;
 
@@ -36,11 +40,12 @@ int whish(int w) {
 }
 
 int main() {
+    system("clear");
     // 随机引擎
     unsigned long seed = system_clock::now().time_since_epoch().count();
     mt19937 e(seed);
     uniform_real_distribution<double> ri(0.0, 1.0);
-    while (1){
+    while (1) {
         // 循环变量
         int i, j;
 
@@ -135,6 +140,7 @@ int main() {
         // 统计
         long long int sum = 0; // 总抽数
         int get = 0; // 预算以内实现目标的人数
+        list<int> trials; // 每次抽卡的详细抽数
 
         // 状态变量
         double temp; // 概率临时值
@@ -149,10 +155,11 @@ int main() {
             gbd = bd5 + 1, gup = up5;
             tot = 0;
             int fatePoint = 0;
+
             for (j = 1; j < 999999; j++) {
                 temp = ri(e);
                 if (temp < b5[gbd]) // 出金
-                    {
+                {
                     gbd = 1;
                     if (wish > 4)pbd++;
                     else if (wish == 1) {
@@ -188,8 +195,8 @@ int main() {
                     } else if (wish == 4) { // 常驻池10个五星武器
                         if (ri(e) < (double) 1 / 2 / 10) tot++;
                     }
-                    } else if (temp < b4[pbd] + b5[gbd] && wish > 4) // 出紫
-                        {
+                } else if (temp < b4[pbd] + b5[gbd] && wish > 4) // 出紫
+                {
                     gbd++, pbd = 1;
                     if (wish == 5) {
                         if (pup || ri(e) < 0.5) {
@@ -206,7 +213,7 @@ int main() {
                     } else if (wish == 8) { // 常驻池18个四星武器
                         if (ri(e) < (double) 1 / 18) tot++;
                     }
-                        } else {
+                } else {
                     gbd++;
                     if (wish > 4)pbd++;
                 }
@@ -214,11 +221,31 @@ int main() {
                 // 数量达标后
                 if (tot == goal) {
                     sum += j;
-                    if (j <= budget)get++;
+                    trials.push_back(j);
+                    if (j <= budget) {
+                        get++;
+                    }
                     break;
                 }
             }
         }
+
+        // 计算70,80,90百分位
+        // 计算均值
+        double average = (double) sum / gachan;
+        // 计算方差
+        double totalDeviation = 0;
+        for (int tries : trials) {
+            int i = tries;
+            double deviation = (i - average) * (i - average);
+            totalDeviation += deviation;
+        }
+        double stderr = sqrt(totalDeviation / gachan);
+        // 90百分位1.281552，80百分位0.8416212,70百分位0.5244005
+        // x = µ + Zσ
+        double ninetiethPercentile = average + 1.281552 * stderr;
+        double eightiethPercentile = average + 0.8416212 * stderr;
+        double seventiethPercentile = average + 0.5244005 * stderr;
 
         auto etime = system_clock::now();
         auto duration = duration_cast<microseconds>(etime - stime);
@@ -247,8 +274,14 @@ int main() {
 
         printf("\n总%d人所需的平均抽数 %.2lf 次\n", gachan, (double) sum / gachan);
         printf("%d人在预算以内达成，占比 %.3lf%%\n", get, (double) get / gachan * 100);
+        printf("70%%的人在%.2lf抽内达成目标；80%%的人在%.2lf抽内达成目标；90%%的人在%.2lf抽内达成目标\n\n",
+               seventiethPercentile,
+               eightiethPercentile,
+               ninetiethPercentile);
         cout << "按Enter开始下一次（ctrl+C退出）……" << endl;
         system("read");
         system("clear");
     }
 }
+
+#pragma clang diagnostic pop
