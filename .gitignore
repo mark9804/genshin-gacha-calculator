@@ -3,4 +3,6 @@ requirements.txt
 genshin-gacha-calculator.py
 genshin-gacha-calculator-gui.py
 a.out
+*.exe
+*.sh
 .DS_Store

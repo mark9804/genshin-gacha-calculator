@@ -97,7 +97,7 @@
 
 ## TODO
 
-- [ ] Python版本（因为Python iterate太慢了，除了矩阵运算外暂时找不到好的方式，希望有矩阵贼6的大佬加入）
+- [ ] Python版本（决定采用动态规划重写，感谢[OneBST/GGanalysis](https://github.com/OneBST/GGanalysis)）
 - [ ] GUI (Python版本预计会使用 [Gooey](https://github.com/chriskiehl/Gooey)，C++不会)
 
 ## Credits
